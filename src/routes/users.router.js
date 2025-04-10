@@ -3,6 +3,23 @@ import { UserModel } from '../models/User.js';
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: Operaciones relacionadas con usuarios
+ */
+
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Obtener todos los usuarios
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios
+ */
 router.get('/', async (req, res, next) => {
     try {
         const users = await UserModel.find();
