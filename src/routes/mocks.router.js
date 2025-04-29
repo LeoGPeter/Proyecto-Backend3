@@ -1,8 +1,8 @@
 import express from 'express';
 import { generateMockPets, generateMockUsers } from '../mocking.js';
 import { logger } from '../utils/logger.js';
-import { UserModel } from '../models/User.js';
-import { PetModel } from '../models/Pet.js';
+import { UserModel } from '../dao/models/User.js';
+import { PetModel } from '../dao/models/Pet.js';
 
 const router = express.Router();
 

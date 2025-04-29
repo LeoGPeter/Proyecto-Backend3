@@ -2,7 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { body, validationResult } from 'express-validator';
-import { UserModel } from '../models/User.js';
+import { UserModel } from '../dao/models/User.js';
 
 const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET || 'supersecreta123';

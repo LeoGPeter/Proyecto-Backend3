@@ -1,5 +1,5 @@
 import express from 'express';
-import { PetModel } from '../models/Pet.js';
+import { getAllPets, createPet, getPetById } from '../controllers/pets.controller.js';
 
 const router = express.Router();
 
@@ -10,23 +10,13 @@ const router = express.Router();
  *   description: Operaciones relacionadas con mascotas
  */
 
-/**
- * @swagger
- * /api/pets:
- *   get:
- *     summary: Obtener todas las mascotas
- *     tags: [Pets]
- *     responses:
- *       200:
- *         description: Lista de mascotas
- */
-router.get('/', async (req, res, next) => {
-    try {
-        const pets = await PetModel.find();
-        res.json({ success: true, data: pets });
-    } catch (error) {
-        next(error);
-    }
-});
+// GET all pets
+router.get('/', getAllPets);
+
+// POST create a pet
+router.post('/', createPet);
+
+// GET pet by ID
+router.get('/:id', getPetById);
 
 export default router;

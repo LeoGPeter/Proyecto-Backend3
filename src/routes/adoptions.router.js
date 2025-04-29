@@ -1,5 +1,5 @@
 import express from 'express';
-import { AdoptionModel } from '../models/Adoption.js';
+import { AdoptionModel } from '../dao/models/Adoption.js';
 
 const router = express.Router();
 
