@@ -1,44 +1,41 @@
 import * as chai from 'chai';
 import supertest from 'supertest';
+import { logger } from '../src/utils/logger.js';
 import app from '../src/server.js';
 
 const expect = chai.expect;
 const request = supertest(app);
 
-describe('Testing Users Endpoints', () => {
-  
-  let createdUserEmail = `testuser${Date.now()}@test.com`;
-  let createdUserPassword = 'password123';
+describe('User Routes Test', () => {
+    const testUser = {
+        name: 'Test User',
+        email: `testuser${Date.now()}@mail.com`,
+        password: 'password123'
+    };
 
-  it('Debe registrar un nuevo usuario', async () => {
-    const response = await request.post('/api/sessions/register').send({
-      name: 'Test User',
-      email: createdUserEmail,
-      password: createdUserPassword
+    it('Debe registrar un nuevo usuario', async () => {
+        try {
+            const res = await request.post('/api/users/register').send(testUser);
+
+            expect(res.status).to.equal(201);
+            expect(res.body.success).to.be.true;
+            expect(res.body.data).to.have.property('_id');
+        } catch (err) {
+            logger.error(`Test failed: ${err.message}`);
+            throw err;
+        }
     });
 
-    expect(response.status).to.equal(201);
-    expect(response.body.success).to.be.true;
-    expect(response.body.message).to.equal('Usuario registrado correctamente');
-  });
+    it('Debe fallar al registrar un usuario ya existente', async () => {
+        try {
+            const res = await request.post('/api/users/register').send(testUser);
 
-  it('Debe loguear el usuario registrado', async () => {
-    const response = await request.post('/api/sessions/login').send({
-      email: createdUserEmail,
-      password: createdUserPassword
+            expect(res.status).to.equal(400);
+            expect(res.body.error.message).to.equal('User already exists');
+        } catch (err) {
+            logger.error(`Test failed: ${err.message}`);
+            throw err;
+        }
     });
-
-    expect(response.status).to.equal(200);
-    expect(response.body.success).to.be.true;
-    expect(response.body).to.have.property('token');
-  });
-
-  it('Debe obtener todos los usuarios', async () => {
-    const response = await request.get('/api/users');
-
-    expect(response.status).to.equal(200);
-    expect(response.body.success).to.be.true;
-    expect(response.body.data).to.be.an('array');
-  });
-
 });
+

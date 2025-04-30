@@ -1,4 +1,6 @@
+import { PetModel } from '../dao/models/Pet.js';
 import { PetService } from '../services/pets.service.js';
+import {CustomError} from '../utils/customError.js'
 
 export const getAllPets = async (req, res, next) => {
     try {
@@ -11,8 +13,22 @@ export const getAllPets = async (req, res, next) => {
 
 export const createPet = async (req, res, next) => {
     try {
-        const pet = await PetService.createPet(req.body);
-        res.status(201).json({ success: true, data: pet });
+        const { name, species, breed, age, adopted, owner } = req.body;
+
+        if (!name || !species || !breed || age == null) {
+            throw new CustomError('MISSING_PARAMETERS');
+        }
+
+        const existingPet = await PetModel.findOne({ name, species, owner });
+
+        if (existingPet) {
+            throw new CustomError('PET_ALREADY_EXISTS');
+        }
+
+        const newPet = new PetModel({ name, species, breed, age, adopted, owner });
+        const savedPet = await newPet.save();
+
+        res.status(201).json({ success: true, data: savedPet });
     } catch (error) {
         next(error);
     }

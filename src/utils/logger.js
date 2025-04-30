@@ -1,28 +1,24 @@
 import winston from 'winston';
+import moment from 'moment-timezone';
 
-const levels = {
-    debug: 0,
-    http: 1,
-    info: 2,
-    warn: 3,
-    error: 4,
-    fatal: 5
-};
+// Detecta automáticamente la zona horaria del sistema
+const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+const logFormat = winston.format.printf(({ level, message, timestamp }) => {
+    const localTime = moment(timestamp).tz(localTimeZone).format('YYYY-MM-DD HH:mm:ss');
+    return `[${localTime}] [${level.toUpperCase()}]: ${message}`;
+});
 
 const logger = winston.createLogger({
-    levels,
+    level: 'debug',
     format: winston.format.combine(
-        winston.format.timestamp({
-            format: () => new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })
-        }),
-        winston.format.json()
+        winston.format.timestamp(),
+        logFormat
     ),
     transports: [
-        new winston.transports.Console({
-            level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-            format: winston.format.simple()
-        }),
-        new winston.transports.File({ filename: 'errors.log', level: 'error' })
+        new winston.transports.Console({ level: 'debug' }),
+        new winston.transports.File({ filename: 'logs/errors.log', level: 'error' }),
+        new winston.transports.File({ filename: 'logs/combined.log' })
     ]
 });
 
